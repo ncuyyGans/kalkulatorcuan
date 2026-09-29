@@ -3,226 +3,432 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Kalkulator modal, diskon voucher, dan keuntungan bisnis.">
-  <title>Kalkulator Modal & Untung Bisnis</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <meta name="description" content="Kalkulator modal, voucher, dan keuntungan untuk membantu keputusan kulakan.">
+  <meta name="theme-color" content="#176B52">
+  <title>Kalkulator Cuan — Hitung Modal & Untung</title>
   <style>
-    body { font-family: 'Inter', sans-serif; background-color: #f3f4f6; }
-    ::-webkit-scrollbar { width: 8px; }
-    ::-webkit-scrollbar-track { background: #f1f1f1; }
-    ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
-    ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(-10px); }
-      to { opacity: 1; transform: translateY(0); }
+    :root {
+      color-scheme: light;
+      --canvas: #f6f7f4;
+      --surface: #ffffff;
+      --surface-soft: #f0f5f1;
+      --surface-warm: #faf7f0;
+      --text: #202522;
+      --muted: #69716c;
+      --border: #dfe5e0;
+      --primary: #176b52;
+      --primary-hover: #115840;
+      --primary-soft: #e5f2ec;
+      --green: #25785d;
+      --green-soft: #e8f3ee;
+      --orange: #a9611c;
+      --orange-soft: #fbefe1;
+      --red: #c14e44;
+      --red-soft: #fceae8;
+      --blue: #2d6da3;
+      --blue-soft: #e9f2f8;
+      --shadow: 0 1px 2px rgba(20, 38, 29, .04), 0 12px 30px rgba(20, 38, 29, .07);
     }
-    @keyframes slideDown {
-      from { top: -20px; opacity: 0; }
-      to { top: 16px; opacity: 1; }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      color: var(--text);
+      background:
+        radial-gradient(circle at 8% 0%, rgba(23, 107, 82, .08), transparent 28rem),
+        var(--canvas);
+      line-height: 1.5;
+    }
+    button, input { font: inherit; }
+    button { cursor: pointer; }
+    svg { display: block; }
+
+    .shell { width: min(1120px, calc(100% - 48px)); margin: 0 auto; }
+    .topbar { padding: 24px 0 12px; }
+    .brand { display: inline-flex; align-items: center; gap: 10px; font-size: 15px; font-weight: 800; letter-spacing: -.02em; }
+    .brand-mark { width: 34px; height: 34px; border-radius: 10px; display: grid; place-items: center; color: white; background: var(--primary); box-shadow: 0 6px 14px rgba(23, 107, 82, .2); }
+    .brand-mark svg { width: 20px; height: 20px; }
+
+    .intro { padding: 34px 0 30px; display: grid; grid-template-columns: minmax(0, 700px) auto; gap: 40px; align-items: end; }
+    .eyebrow { display: inline-flex; align-items: center; gap: 8px; color: var(--primary); font-size: 13px; font-weight: 750; letter-spacing: .08em; text-transform: uppercase; }
+    .eyebrow::before { content: ""; width: 22px; height: 2px; border-radius: 999px; background: currentColor; }
+    h1 { margin: 12px 0 12px; max-width: 660px; font-size: clamp(34px, 5vw, 58px); line-height: 1.04; letter-spacing: -.055em; font-weight: 800; }
+    .intro-copy { margin: 0; max-width: 610px; color: var(--muted); font-size: 17px; }
+    .trust { display: grid; gap: 10px; min-width: 210px; }
+    .trust-item { display: flex; align-items: center; gap: 10px; color: var(--muted); font-size: 14px; }
+    .trust-icon { width: 28px; height: 28px; border-radius: 8px; display: grid; place-items: center; background: var(--primary-soft); color: var(--primary); }
+    .trust-icon svg { width: 15px; height: 15px; }
+
+    .workspace { display: grid; grid-template-columns: minmax(0, .92fr) minmax(410px, 1.08fr); gap: 20px; padding-bottom: 52px; align-items: start; }
+    .card { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; box-shadow: var(--shadow); }
+    .card-head { padding: 24px 24px 18px; border-bottom: 1px solid var(--border); }
+    .card-kicker { margin: 0 0 4px; color: var(--primary); font-size: 12px; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; }
+    .card-title { margin: 0; font-size: 21px; line-height: 1.3; letter-spacing: -.025em; }
+    .card-subtitle { margin: 5px 0 0; color: var(--muted); font-size: 14px; }
+    .card-body { padding: 24px; }
+
+    .form-stack { display: grid; gap: 20px; }
+    .field-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+    .field { display: grid; gap: 7px; }
+    .field label { color: #3f4742; font-size: 14px; font-weight: 650; }
+    .optional { color: var(--muted); font-size: 12px; font-weight: 500; }
+    .input-wrap { position: relative; }
+    .input-prefix, .input-suffix { position: absolute; top: 50%; transform: translateY(-50%); color: var(--muted); font-size: 14px; pointer-events: none; }
+    .input-prefix { left: 14px; }
+    .input-suffix { right: 14px; }
+    input {
+      width: 100%; min-height: 46px; border: 1px solid var(--border); border-radius: 10px; padding: 11px 13px; color: var(--text); background: var(--surface); outline: none; transition: border-color .16s ease, box-shadow .16s ease, background .16s ease;
+    }
+    input.has-prefix { padding-left: 41px; }
+    input.has-suffix { padding-right: 48px; }
+    input::placeholder { color: #a0a7a2; }
+    input:hover { border-color: #cbd4cd; }
+    input:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(23, 107, 82, .13); }
+    input:invalid:not(:placeholder-shown) { border-color: var(--red); }
+
+    .voucher { border: 1px solid #eadfcf; border-radius: 12px; background: var(--surface-warm); overflow: hidden; }
+    .voucher-head { display: flex; align-items: center; gap: 11px; padding: 14px 15px; border-bottom: 1px solid #eadfcf; }
+    .voucher-icon { width: 32px; height: 32px; border-radius: 9px; display: grid; place-items: center; color: var(--orange); background: var(--orange-soft); }
+    .voucher-icon svg { width: 18px; height: 18px; }
+    .voucher-title { margin: 0; font-size: 14px; font-weight: 750; }
+    .voucher-note { margin: 1px 0 0; color: var(--muted); font-size: 12px; }
+    .voucher-fields { display: grid; gap: 14px; padding: 16px; }
+
+    .submit { min-height: 50px; display: inline-flex; align-items: center; justify-content: center; gap: 10px; border: 0; border-radius: 10px; padding: 0 18px; color: white; background: var(--primary); font-weight: 750; box-shadow: 0 7px 18px rgba(23, 107, 82, .18); transition: transform .16s ease, background .16s ease, box-shadow .16s ease; }
+    .submit:hover { background: var(--primary-hover); box-shadow: 0 9px 22px rgba(23, 107, 82, .23); transform: translateY(-1px); }
+    .submit:active { transform: translateY(0); }
+    .submit:focus-visible { outline: 3px solid rgba(23, 107, 82, .26); outline-offset: 3px; }
+    .submit svg { width: 18px; height: 18px; }
+
+    .result-card { position: sticky; top: 20px; overflow: hidden; }
+    .result-top { padding: 24px; background: linear-gradient(135deg, #125940 0%, #1d775d 100%); color: white; }
+    .result-topline { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; }
+    .result-label { margin: 0 0 5px; color: rgba(255,255,255,.68); font-size: 12px; font-weight: 750; letter-spacing: .08em; text-transform: uppercase; }
+    .result-name { margin: 0; font-size: 21px; line-height: 1.3; letter-spacing: -.025em; }
+    .status { display: inline-flex; align-items: center; gap: 7px; min-height: 30px; border: 1px solid rgba(255,255,255,.22); border-radius: 999px; padding: 5px 10px; color: rgba(255,255,255,.82); background: rgba(255,255,255,.08); font-size: 12px; font-weight: 650; white-space: nowrap; }
+    .status-dot { width: 7px; height: 7px; border-radius: 50%; background: #9dd4bd; }
+    .profit-hero { margin-top: 27px; }
+    .profit-caption { display: flex; align-items: center; gap: 7px; color: rgba(255,255,255,.74); font-size: 13px; }
+    .profit-value { margin-top: 3px; font-size: clamp(35px, 5vw, 50px); line-height: 1.1; letter-spacing: -.045em; font-weight: 800; }
+    .profit-detail { margin-top: 8px; color: rgba(255,255,255,.72); font-size: 14px; }
+
+    .empty-state { padding: 34px 24px; text-align: center; }
+    .empty-visual { position: relative; width: 112px; height: 82px; margin: 0 auto 20px; }
+    .empty-sheet { position: absolute; inset: 5px 17px 0; border: 1px solid var(--border); border-radius: 11px; background: var(--surface); box-shadow: 0 10px 24px rgba(20,38,29,.09); }
+    .empty-line { height: 6px; margin: 12px 15px 0; border-radius: 4px; background: var(--surface-soft); }
+    .empty-line:nth-child(2) { width: 55%; }
+    .empty-coin { position: absolute; right: 2px; bottom: 2px; width: 38px; height: 38px; border: 4px solid var(--surface); border-radius: 50%; display: grid; place-items: center; color: var(--orange); background: var(--orange-soft); font-size: 17px; font-weight: 800; box-shadow: 0 5px 12px rgba(20,38,29,.12); }
+    .empty-title { margin: 0 0 6px; font-size: 18px; letter-spacing: -.02em; }
+    .empty-copy { max-width: 350px; margin: 0 auto; color: var(--muted); font-size: 14px; }
+
+    .result-body { padding: 22px 24px 24px; }
+    .metrics { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .metric { min-height: 97px; border: 1px solid var(--border); border-radius: 11px; padding: 14px; background: var(--surface); }
+    .metric-label { color: var(--muted); font-size: 12px; }
+    .metric-value { margin-top: 7px; font-size: 17px; line-height: 1.25; font-weight: 750; letter-spacing: -.025em; }
+    .metric-foot { margin-top: 4px; color: var(--muted); font-size: 12px; }
+    .metric.discount { background: var(--green-soft); border-color: #cfe4d8; }
+    .metric.discount .metric-value { color: var(--green); }
+
+    .breakdown { margin-top: 18px; border-top: 1px solid var(--border); padding-top: 18px; }
+    .breakdown-title { display: flex; align-items: center; justify-content: space-between; margin-bottom: 11px; }
+    .breakdown-title h3 { margin: 0; font-size: 14px; }
+    .breakdown-title span { color: var(--muted); font-size: 12px; }
+    .bar { position: relative; display: flex; width: 100%; height: 9px; overflow: hidden; border-radius: 999px; background: var(--surface-soft); }
+    .bar-cost { width: 75%; background: #b9c5be; transition: width .35s ease; }
+    .bar-profit { width: 25%; background: var(--primary); transition: width .35s ease; }
+    .legend { display: flex; gap: 18px; margin-top: 10px; color: var(--muted); font-size: 12px; }
+    .legend-item { display: flex; align-items: center; gap: 7px; }
+    .legend-dot { width: 8px; height: 8px; border-radius: 3px; background: #b9c5be; }
+    .legend-dot.profit { background: var(--primary); }
+
+    .recommendation { margin-top: 16px; display: flex; gap: 11px; border: 1px solid #cfe0ec; border-radius: 11px; padding: 13px; color: #285b80; background: var(--blue-soft); }
+    .recommendation.good { border-color: #cfe4d8; color: #235f4a; background: var(--green-soft); }
+    .recommendation-icon { flex: 0 0 auto; width: 27px; height: 27px; display: grid; place-items: center; border-radius: 8px; background: rgba(255,255,255,.65); }
+    .recommendation-icon svg { width: 15px; height: 15px; }
+    .recommendation p { margin: 1px 0 0; font-size: 13px; }
+    .recommendation strong { font-weight: 800; }
+
+    .loss .result-top { background: linear-gradient(135deg, #8f3933, #bf554b); }
+    .loss .status-dot { background: #ffd0ca; }
+    .loss .bar-profit { background: var(--red); }
+    .hidden { display: none !important; }
+
+    .toast { position: fixed; z-index: 99; top: 18px; left: 50%; transform: translateX(-50%); display: flex; align-items: center; gap: 9px; width: max-content; max-width: calc(100% - 32px); border: 1px solid #f2c7c2; border-radius: 10px; padding: 12px 15px; color: #8e3832; background: var(--red-soft); box-shadow: var(--shadow); font-size: 14px; font-weight: 650; animation: toastIn .2s ease-out; }
+    @keyframes toastIn { from { opacity: 0; transform: translate(-50%, -8px); } to { opacity: 1; transform: translate(-50%, 0); } }
+
+    .footer { padding: 0 0 30px; color: var(--muted); text-align: center; font-size: 12px; }
+
+    @media (max-width: 860px) {
+      .intro { grid-template-columns: 1fr; gap: 22px; padding-top: 24px; }
+      .trust { grid-template-columns: repeat(3, auto); min-width: 0; }
+      .workspace { grid-template-columns: 1fr; }
+      .result-card { position: static; }
+    }
+
+    @media (max-width: 580px) {
+      .shell { width: min(100% - 32px, 1120px); }
+      .topbar { padding-top: 17px; }
+      .intro { padding: 28px 0 24px; }
+      h1 { font-size: 38px; }
+      .intro-copy { font-size: 15px; }
+      .trust { grid-template-columns: 1fr; gap: 8px; }
+      .field-grid { grid-template-columns: 1fr; }
+      .card-head, .card-body, .result-top, .result-body { padding-left: 18px; padding-right: 18px; }
+      .result-topline { align-items: center; }
+      .status { padding-inline: 8px; }
+      .metrics { grid-template-columns: 1fr; }
+      .metric { min-height: 82px; }
+      .profit-value { font-size: 39px; }
+      .workspace { padding-bottom: 36px; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { scroll-behavior: auto !important; transition: none !important; animation: none !important; }
+    }
+
+    @media (prefers-color-scheme: dark) {
+      :root {
+        color-scheme: dark;
+        --canvas: #191b1a; --surface: #202321; --surface-soft: #2a2e2b; --surface-warm: #28251f;
+        --text: #f4f7f5; --muted: rgba(255,255,255,.63); --border: rgba(255,255,255,.14);
+        --primary: #72bc8f; --primary-hover: #84c99f; --primary-soft: rgba(114,188,143,.13);
+        --green: #8bd0a5; --green-soft: rgba(114,188,143,.12); --orange: #e8ad70; --orange-soft: rgba(222,146,85,.13);
+        --red: #ee8075; --red-soft: rgba(233,115,102,.13); --blue: #83b7e5; --blue-soft: rgba(94,159,232,.12);
+        --shadow: 0 1px 2px rgba(0,0,0,.2), 0 14px 34px rgba(0,0,0,.22);
+      }
+      body { background: radial-gradient(circle at 8% 0%, rgba(114,188,143,.08), transparent 28rem), var(--canvas); }
+      .field label { color: rgba(255,255,255,.78); }
+      input::placeholder { color: rgba(255,255,255,.35); }
+      input:hover { border-color: rgba(255,255,255,.24); }
+      .voucher { border-color: rgba(222,146,85,.2); }
+      .voucher-head { border-color: rgba(222,146,85,.2); }
+      .result-top { background: linear-gradient(135deg, #174c3c, #216b54); }
+      .loss .result-top { background: linear-gradient(135deg, #71332e, #95433b); }
+      .bar-cost { background: #59605c; }
+      .legend-dot { background: #59605c; }
+      .recommendation { border-color: rgba(94,159,232,.25); color: #b6d9f5; }
+      .recommendation.good { border-color: rgba(114,188,143,.25); color: #b9e0c8; }
     }
   </style>
 </head>
-<body class="min-h-screen flex items-center justify-center p-4">
-  <main class="bg-white w-full max-w-lg rounded-2xl shadow-xl overflow-hidden">
-    <header class="bg-blue-600 p-6 text-white text-center">
-      <h1 class="text-2xl font-bold">Kalkulator Kulakan</h1>
-      <p class="text-blue-100 text-sm mt-1">Hitung modal dan untung dengan mudah</p>
-    </header>
+<body>
+  <header class="topbar">
+    <div class="shell">
+      <div class="brand" aria-label="Kalkulator Cuan">
+        <span class="brand-mark" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 17l5-5 4 4 7-8"/><path d="M14 8h6v6"/></svg>
+        </span>
+        Kalkulator Cuan
+      </div>
+    </div>
+  </header>
 
-    <div class="p-6 space-y-6">
-      <form id="calculatorForm" class="space-y-4">
-        <div>
-          <label for="productName" class="block text-sm font-medium text-gray-700 mb-1">Nama Produk</label>
-          <input type="text" id="productName" placeholder="Contoh: Indomie Goreng"
-            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-shadow">
+  <main class="shell">
+    <section class="intro">
+      <div>
+        <div class="eyebrow">Alat bantu kulakan</div>
+        <h1>Belanja lebih tepat.<br>Untung lebih jelas.</h1>
+        <p class="intro-copy">Hitung modal setelah voucher, laba per produk, dan jumlah belanja paling optimal—sebelum Anda checkout.</p>
+      </div>
+      <div class="trust" aria-label="Keunggulan">
+        <div class="trust-item"><span class="trust-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></span>Hitung dalam hitungan detik</div>
+        <div class="trust-item"><span class="trust-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12l4 4L19 6"/></svg></span>Tanpa simpan data pribadi</div>
+        <div class="trust-item"><span class="trust-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19V9m6 10V5m6 14v-7m4 7H2"/></svg></span>Rekomendasi kuantitas optimal</div>
+      </div>
+    </section>
+
+    <section class="workspace" aria-label="Kalkulator bisnis">
+      <form id="calculatorForm" class="card" novalidate>
+        <div class="card-head">
+          <p class="card-kicker">Langkah 1</p>
+          <h2 class="card-title">Masukkan rincian produk</h2>
+          <p class="card-subtitle">Isi angka sesuai transaksi yang akan dilakukan.</p>
         </div>
-
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <div>
-            <label for="buyPrice" class="block text-sm font-medium text-gray-700 mb-1">Harga Beli Satuan (Rp)</label>
-            <input type="number" id="buyPrice" placeholder="3000" required min="1" step="any"
-              class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-shadow">
+        <div class="card-body form-stack">
+          <div class="field">
+            <label for="productName">Nama produk <span class="optional">(opsional)</span></label>
+            <input id="productName" type="text" placeholder="Misalnya: Minyak goreng 1 liter" autocomplete="off">
           </div>
-          <div>
-            <label for="quantity" class="block text-sm font-medium text-gray-700 mb-1">Kuantitas (Pcs)</label>
-            <input type="number" id="quantity" placeholder="40" required min="1" step="1"
-              class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-shadow">
-          </div>
-        </div>
 
-        <section class="bg-gray-50 p-4 rounded-xl border border-gray-200" aria-labelledby="voucherHeading">
-          <h2 id="voucherHeading" class="text-sm font-semibold text-gray-800 mb-3 flex items-center">
-            <svg class="w-4 h-4 mr-2 text-yellow-500" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
-              <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path>
-            </svg>
-            Detail Voucher Diskon
-          </h2>
-          <div class="space-y-3">
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <div>
-                <label for="discountPercent" class="block text-xs font-medium text-gray-600 mb-1">Diskon (%)</label>
-                <input type="number" id="discountPercent" placeholder="30" min="0" max="100" step="any"
-                  class="w-full px-3 py-2 text-sm border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 outline-none">
-              </div>
-              <div>
-                <label for="maxDiscount" class="block text-xs font-medium text-gray-600 mb-1">Maks. Diskon (Rp)</label>
-                <input type="number" id="maxDiscount" placeholder="100000" min="0" step="any"
-                  class="w-full px-3 py-2 text-sm border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 outline-none">
-              </div>
+          <div class="field-grid">
+            <div class="field">
+              <label for="buyPrice">Harga beli satuan</label>
+              <div class="input-wrap"><span class="input-prefix">Rp</span><input class="has-prefix" id="buyPrice" type="number" min="1" step="any" placeholder="3.000" inputmode="decimal" required></div>
             </div>
-            <div>
-              <label for="minPurchase" class="block text-xs font-medium text-gray-600 mb-1">Minimal Belanja (Rp)</label>
-              <input type="number" id="minPurchase" placeholder="100000" min="0" step="any"
-                class="w-full px-3 py-2 text-sm border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 outline-none">
+            <div class="field">
+              <label for="quantity">Jumlah barang</label>
+              <div class="input-wrap"><input class="has-suffix" id="quantity" type="number" min="1" step="1" placeholder="40" inputmode="numeric" required><span class="input-suffix">pcs</span></div>
             </div>
           </div>
-        </section>
 
-        <div>
-          <label for="sellPrice" class="block text-sm font-medium text-gray-700 mb-1">Harga Jual Satuan ke Agen (Rp)</label>
-          <input type="number" id="sellPrice" placeholder="3500" required min="1" step="any"
-            class="w-full px-4 py-2 border border-green-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 outline-none transition-shadow bg-green-50">
+          <div class="voucher">
+            <div class="voucher-head">
+              <span class="voucher-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 7a2 2 0 0 0 2-2h12a2 2 0 0 0 2 2v3a2 2 0 0 0 0 4v3a2 2 0 0 0-2 2H6a2 2 0 0 0-2-2v-3a2 2 0 0 0 0-4V7z"/><path d="M13 5v14"/></svg></span>
+              <div><p class="voucher-title">Punya voucher belanja?</p><p class="voucher-note">Kosongkan jika tidak menggunakan voucher.</p></div>
+            </div>
+            <div class="voucher-fields">
+              <div class="field-grid">
+                <div class="field">
+                  <label for="discountPercent">Diskon</label>
+                  <div class="input-wrap"><input class="has-suffix" id="discountPercent" type="number" min="0" max="100" step="any" placeholder="30" inputmode="decimal"><span class="input-suffix">%</span></div>
+                </div>
+                <div class="field">
+                  <label for="maxDiscount">Maksimal diskon</label>
+                  <div class="input-wrap"><span class="input-prefix">Rp</span><input class="has-prefix" id="maxDiscount" type="number" min="0" step="any" placeholder="100.000" inputmode="decimal"></div>
+                </div>
+              </div>
+              <div class="field">
+                <label for="minPurchase">Minimal belanja</label>
+                <div class="input-wrap"><span class="input-prefix">Rp</span><input class="has-prefix" id="minPurchase" type="number" min="0" step="any" placeholder="100.000" inputmode="decimal"></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="field">
+            <label for="sellPrice">Harga jual satuan</label>
+            <div class="input-wrap"><span class="input-prefix">Rp</span><input class="has-prefix" id="sellPrice" type="number" min="1" step="any" placeholder="3.500" inputmode="decimal" required></div>
+          </div>
+
+          <button class="submit" type="submit">Hitung potensi keuntungan <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14m-6-6 6 6-6 6"/></svg></button>
         </div>
-
-        <button type="submit"
-          class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-4 rounded-lg transition-colors shadow-md active:scale-95">
-          Hitung Modal & Untung
-        </button>
       </form>
 
-      <section id="resultSection" class="hidden animate-[fadeIn_0.3s_ease-in-out]" aria-live="polite">
-        <div class="border-t border-gray-200 pt-6 mt-2">
-          <h2 class="text-lg font-bold text-gray-800 mb-4 text-center" id="displayProductName">Hasil Perhitungan</h2>
-          <div class="space-y-4">
-            <div class="bg-red-50 p-4 rounded-lg border border-red-100">
-              <h3 class="text-sm font-bold text-red-800 mb-2 border-b border-red-200 pb-1">Rincian Belanja (Modal)</h3>
-              <div class="flex justify-between gap-4 text-sm text-gray-700 mb-1"><span>Total Belanja Kotor:</span><span id="resGrossTotal" class="font-medium">Rp 0</span></div>
-              <div class="flex justify-between gap-4 text-sm text-green-600 mb-1"><span>Potongan Voucher:</span><span id="resDiscount" class="font-medium">- Rp 0</span></div>
-              <div class="flex justify-between gap-4 text-base font-bold text-red-700 mt-2 pt-2 border-t border-red-200"><span>Modal Total (Yang Dibayar):</span><span id="resNetTotal">Rp 0</span></div>
-              <div class="flex justify-between gap-4 text-xs text-gray-500 mt-1"><span>Modal Asli per Pcs:</span><span id="resModalPerPcs">Rp 0</span></div>
-            </div>
-
-            <div class="bg-green-50 p-4 rounded-lg border border-green-100">
-              <h3 class="text-sm font-bold text-green-800 mb-2 border-b border-green-200 pb-1">Rincian Penjualan (Untung)</h3>
-              <div class="flex justify-between gap-4 text-sm text-gray-700 mb-1"><span>Total Pendapatan Jual:</span><span id="resRevenue" class="font-medium">Rp 0</span></div>
-              <div class="flex justify-between gap-4 text-lg font-bold text-green-700 mt-2 pt-2 border-t border-green-200"><span>Untung Bersih (Total):</span><span id="resTotalProfit">Rp 0</span></div>
-              <div id="profitPerPcsRow" class="flex justify-between gap-4 text-xs text-gray-500 mt-1"><span>Untung per Pcs:</span><span id="resProfitPerPcs">Rp 0</span></div>
-            </div>
-
-            <div id="resRecommendationBox" class="hidden">
-              <p id="resRecommendationText" class="text-sm"></p>
-            </div>
+      <aside id="resultCard" class="card result-card" aria-live="polite">
+        <div id="resultHeader" class="result-top hidden">
+          <div class="result-topline">
+            <div><p class="result-label">Estimasi hasil</p><h2 id="displayProductName" class="result-name">Produk Anda</h2></div>
+            <div class="status"><span class="status-dot"></span><span id="statusText">Menguntungkan</span></div>
+          </div>
+          <div class="profit-hero">
+            <div class="profit-caption">Estimasi untung bersih</div>
+            <div id="resTotalProfit" class="profit-value">Rp0</div>
+            <div id="resProfitDetail" class="profit-detail">Rp0 per pcs · Margin 0%</div>
           </div>
         </div>
-      </section>
-    </div>
+
+        <div id="emptyState" class="empty-state">
+          <div class="empty-visual" aria-hidden="true"><div class="empty-sheet"><div class="empty-line"></div><div class="empty-line"></div><div class="empty-line"></div></div><div class="empty-coin">Rp</div></div>
+          <h2 class="empty-title">Hasil akan muncul di sini</h2>
+          <p class="empty-copy">Lengkapi rincian produk, lalu tekan tombol hitung untuk melihat modal dan potensi keuntungan.</p>
+        </div>
+
+        <div id="resultBody" class="result-body hidden">
+          <div class="metrics">
+            <div class="metric"><div class="metric-label">Belanja kotor</div><div id="resGrossTotal" class="metric-value">Rp0</div><div class="metric-foot">Sebelum voucher</div></div>
+            <div class="metric discount"><div class="metric-label">Hemat dari voucher</div><div id="resDiscount" class="metric-value">Rp0</div><div id="discountFoot" class="metric-foot">Voucher terpakai</div></div>
+            <div class="metric"><div class="metric-label">Modal dibayar</div><div id="resNetTotal" class="metric-value">Rp0</div><div id="resModalPerPcs" class="metric-foot">Rp0 per pcs</div></div>
+            <div class="metric"><div class="metric-label">Total penjualan</div><div id="resRevenue" class="metric-value">Rp0</div><div class="metric-foot">Jika semua terjual</div></div>
+          </div>
+
+          <div class="breakdown">
+            <div class="breakdown-title"><h3>Komposisi pendapatan</h3><span id="marginLabel">Margin 0%</span></div>
+            <div class="bar" aria-hidden="true"><div id="costBar" class="bar-cost"></div><div id="profitBar" class="bar-profit"></div></div>
+            <div class="legend"><span class="legend-item"><i class="legend-dot"></i>Modal</span><span class="legend-item"><i class="legend-dot profit"></i>Untung</span></div>
+          </div>
+
+          <div id="recommendation" class="recommendation hidden">
+            <span class="recommendation-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18h6m-5 3h4"/><path d="M8.4 14.5A7 7 0 1 1 15.6 14.5c-.9.7-1.4 1.4-1.6 2.5h-4c-.2-1.1-.7-1.8-1.6-2.5z"/></svg></span>
+            <p id="recommendationText"></p>
+          </div>
+        </div>
+      </aside>
+    </section>
   </main>
 
+  <footer class="footer shell">Perhitungan bersifat estimasi dan belum memasukkan biaya operasional lainnya.</footer>
+
   <script>
-    const formatRupiah = (number) => new Intl.NumberFormat('id-ID', {
-      style: 'currency', currency: 'IDR', minimumFractionDigits: 0, maximumFractionDigits: 0
-    }).format(number);
+    const $ = (id) => document.getElementById(id);
+    const numberValue = (id) => Number.parseFloat($(id).value) || 0;
+    const rupiah = (value) => new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(value);
+    const percent = (value) => new Intl.NumberFormat('id-ID', { maximumFractionDigits: 1 }).format(value);
 
-    const showMessage = (message) => {
-      const oldToast = document.getElementById('errorToast');
-      if (oldToast) oldToast.remove();
+    function showMessage(message) {
+      document.querySelector('.toast')?.remove();
       const toast = document.createElement('div');
-      toast.id = 'errorToast';
+      toast.className = 'toast';
       toast.setAttribute('role', 'alert');
-      toast.className = 'fixed top-4 left-1/2 transform -translate-x-1/2 bg-red-500 text-white px-6 py-3 rounded-lg shadow-lg z-50 animate-[slideDown_0.3s_ease-out] font-medium';
-      toast.textContent = message;
+      toast.innerHTML = `<span aria-hidden="true">⚠</span><span>${message}</span>`;
       document.body.appendChild(toast);
-      setTimeout(() => {
-        toast.classList.add('opacity-0', 'transition-opacity', 'duration-300');
-        setTimeout(() => toast.remove(), 300);
-      }, 3000);
-    };
+      window.setTimeout(() => toast.remove(), 3200);
+    }
 
-    const getNumber = (id) => Number.parseFloat(document.getElementById(id).value) || 0;
+    function calculate() {
+      const productName = $('productName').value.trim() || 'Produk Anda';
+      const buyPrice = numberValue('buyPrice');
+      const quantity = numberValue('quantity');
+      const discountPercent = numberValue('discountPercent');
+      const maxDiscount = numberValue('maxDiscount');
+      const minPurchase = numberValue('minPurchase');
+      const sellPrice = numberValue('sellPrice');
 
-    const calculateResult = () => {
-      const productName = document.getElementById('productName').value.trim() || 'Produk';
-      const buyPrice = getNumber('buyPrice');
-      const quantity = getNumber('quantity');
-      const discountPercent = getNumber('discountPercent');
-      const maxDiscount = getNumber('maxDiscount');
-      const minPurchase = getNumber('minPurchase');
-      const sellPrice = getNumber('sellPrice');
-
-      if (buyPrice <= 0) return showMessage('Harga beli harus lebih dari 0!');
-      if (!Number.isInteger(quantity) || quantity <= 0) return showMessage('Kuantitas harus berupa bilangan bulat lebih dari 0!');
-      if (sellPrice <= 0) return showMessage('Harga jual harus lebih dari 0!');
-      if (discountPercent < 0 || discountPercent > 100) return showMessage('Diskon harus antara 0% dan 100%!');
+      if (buyPrice <= 0) return showMessage('Masukkan harga beli yang valid.');
+      if (!Number.isInteger(quantity) || quantity <= 0) return showMessage('Jumlah barang harus berupa angka bulat lebih dari 0.');
+      if (sellPrice <= 0) return showMessage('Masukkan harga jual yang valid.');
+      if (discountPercent < 0 || discountPercent > 100) return showMessage('Persentase diskon harus antara 0% dan 100%.');
 
       const grossTotal = buyPrice * quantity;
-      let discountAmount = 0;
-      if (grossTotal >= minPurchase) {
-        discountAmount = grossTotal * (discountPercent / 100);
-        if (maxDiscount > 0) discountAmount = Math.min(discountAmount, maxDiscount);
-      }
+      const voucherEligible = discountPercent > 0 && grossTotal >= minPurchase;
+      let discount = voucherEligible ? grossTotal * (discountPercent / 100) : 0;
+      if (maxDiscount > 0) discount = Math.min(discount, maxDiscount);
 
-      const netTotal = grossTotal - discountAmount;
-      const modalPerPcs = netTotal / quantity;
+      const netTotal = Math.max(0, grossTotal - discount);
       const revenue = sellPrice * quantity;
-      const totalProfit = revenue - netTotal;
-      const profitPerPcs = totalProfit / quantity;
+      const profit = revenue - netTotal;
+      const profitPerItem = profit / quantity;
+      const margin = revenue > 0 ? (profit / revenue) * 100 : 0;
+      const costShare = revenue > 0 ? Math.min(100, Math.max(0, (netTotal / revenue) * 100)) : 100;
+      const profitShare = profit > 0 ? Math.min(100, 100 - costShare) : 0;
 
-      document.getElementById('displayProductName').textContent = `Hasil Analisis: ${productName}`;
-      document.getElementById('resGrossTotal').textContent = formatRupiah(grossTotal);
-      document.getElementById('resDiscount').textContent = `- ${formatRupiah(discountAmount)}`;
-      document.getElementById('resNetTotal').textContent = formatRupiah(netTotal);
-      document.getElementById('resModalPerPcs').textContent = formatRupiah(modalPerPcs);
-      document.getElementById('resRevenue').textContent = formatRupiah(revenue);
+      $('displayProductName').textContent = productName;
+      $('resTotalProfit').textContent = rupiah(profit);
+      $('resProfitDetail').textContent = `${rupiah(profitPerItem)} per pcs · Margin ${percent(margin)}%`;
+      $('resGrossTotal').textContent = rupiah(grossTotal);
+      $('resDiscount').textContent = rupiah(discount);
+      $('discountFoot').textContent = voucherEligible ? 'Voucher terpakai' : 'Voucher belum berlaku';
+      $('resNetTotal').textContent = rupiah(netTotal);
+      $('resModalPerPcs').textContent = `${rupiah(netTotal / quantity)} per pcs`;
+      $('resRevenue').textContent = rupiah(revenue);
+      $('marginLabel').textContent = `Margin ${percent(margin)}%`;
+      $('costBar').style.width = `${profit >= 0 ? costShare : 100}%`;
+      $('profitBar').style.width = `${profitShare}%`;
 
-      const totalProfitElement = document.getElementById('resTotalProfit');
-      const profitPerPcsElement = document.getElementById('resProfitPerPcs');
-      const profitPerPcsRow = document.getElementById('profitPerPcsRow');
-      totalProfitElement.textContent = formatRupiah(totalProfit);
-      profitPerPcsElement.textContent = formatRupiah(profitPerPcs);
-      totalProfitElement.classList.toggle('text-red-700', totalProfit < 0);
-      totalProfitElement.classList.toggle('text-green-700', totalProfit >= 0);
-      profitPerPcsRow.classList.toggle('text-red-500', totalProfit < 0);
-      profitPerPcsRow.classList.toggle('text-gray-500', totalProfit >= 0);
+      const isLoss = profit < 0;
+      $('resultCard').classList.toggle('loss', isLoss);
+      $('statusText').textContent = isLoss ? 'Perlu ditinjau' : profit === 0 ? 'Balik modal' : 'Menguntungkan';
+      $('emptyState').classList.add('hidden');
+      $('resultHeader').classList.remove('hidden');
+      $('resultBody').classList.remove('hidden');
 
-      const recommendationBox = document.getElementById('resRecommendationBox');
-      const recommendationText = document.getElementById('resRecommendationText');
-      recommendationBox.classList.add('hidden');
-
+      const rec = $('recommendation');
+      rec.classList.add('hidden');
+      rec.classList.remove('good');
       if (discountPercent > 0) {
-        const targetForMaxDiscount = maxDiscount > 0 ? maxDiscount / (discountPercent / 100) : 0;
-        const targetSpend = Math.max(targetForMaxDiscount, minPurchase);
+        const spendForCap = maxDiscount > 0 ? maxDiscount / (discountPercent / 100) : 0;
+        const targetSpend = Math.max(minPurchase, spendForCap);
         if (targetSpend > 0) {
           const optimalQty = Math.ceil(targetSpend / buyPrice);
           const optimalGross = optimalQty * buyPrice;
-          const optimalDiscount = maxDiscount > 0
-            ? Math.min(optimalGross * (discountPercent / 100), maxDiscount)
-            : optimalGross * (discountPercent / 100);
-
+          let optimalDiscount = optimalGross * (discountPercent / 100);
+          if (maxDiscount > 0) optimalDiscount = Math.min(optimalDiscount, maxDiscount);
           if (optimalQty === quantity) {
-            recommendationText.innerHTML = `🔥 <strong>Super!</strong> Kuantitas belanjamu (<strong>${optimalQty} pcs</strong>) sudah paling optimal untuk voucher ini.`;
-            recommendationBox.className = 'bg-green-50 p-4 rounded-lg border border-green-200 mt-2 animate-[fadeIn_0.5s_ease-in-out]';
-            recommendationText.className = 'text-sm text-green-800';
+            rec.classList.add('good');
+            $('recommendationText').innerHTML = `<strong>Jumlah belanja sudah optimal.</strong> ${quantity} pcs memenuhi target voucher dengan potongan ${rupiah(optimalDiscount)}.`;
           } else {
-            recommendationText.innerHTML = `💡 <strong>Tips Cuan Maksimal:</strong> Ubah kuantitas jadi <strong>${optimalQty} pcs</strong> (Belanja: ${formatRupiah(optimalGross)}). Kamu akan mendapat potongan optimal sebesar <strong>${formatRupiah(optimalDiscount)}</strong>.`;
-            recommendationBox.className = 'bg-blue-50 p-4 rounded-lg border border-blue-200 mt-2 animate-[fadeIn_0.5s_ease-in-out]';
-            recommendationText.className = 'text-sm text-blue-800 leading-relaxed';
+            $('recommendationText').innerHTML = `<strong>Saran kuantitas: ${optimalQty} pcs.</strong> Total belanja ${rupiah(optimalGross)} untuk potongan optimal ${rupiah(optimalDiscount)}.`;
           }
-          recommendationBox.classList.remove('hidden');
+          rec.classList.remove('hidden');
         }
       }
 
-      const resultSection = document.getElementById('resultSection');
-      resultSection.classList.remove('hidden');
-      resultSection.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-    };
+      if (window.innerWidth < 861) $('resultCard').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
 
-    document.getElementById('calculatorForm').addEventListener('submit', (event) => {
-      event.preventDefault();
-      calculateResult();
-    });
+    $('calculatorForm').addEventListener('submit', (event) => { event.preventDefault(); calculate(); });
   </script>
 </body>
 </html>
