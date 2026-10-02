@@ -175,6 +175,22 @@
 
     .recommendation.warn { border-color: #eed3ac; color: #8a5518; background: var(--orange-soft); }
 
+    .tool-cards { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin: 4px 0 36px; }
+    .tool-card { display: flex; flex-direction: column; gap: 8px; border: 1px solid var(--border); border-radius: 16px; padding: 22px; color: inherit; text-decoration: none; background: var(--surface); box-shadow: var(--shadow); transition: transform .16s ease, box-shadow .16s ease, border-color .16s ease; }
+    .tool-card:hover { transform: translateY(-2px); border-color: var(--primary); box-shadow: 0 14px 34px rgba(20,38,29,.1); }
+    .tool-card-top { display: flex; align-items: center; justify-content: space-between; }
+    .tool-card-icon { width: 40px; height: 40px; border-radius: 11px; display: grid; place-items: center; color: var(--primary); background: var(--primary-soft); }
+    .tool-card-icon svg { width: 21px; height: 21px; }
+    .tool-card.voucher .tool-card-icon { color: var(--orange); background: var(--orange-soft); }
+    .tool-card-kicker { margin: 0; color: var(--primary); font-size: 12px; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; }
+    .tool-card.voucher .tool-card-kicker { color: var(--orange); }
+    .tool-card h2 { margin: 2px 0 0; font-size: 20px; letter-spacing: -.025em; }
+    .tool-card p { margin: 0; color: var(--muted); font-size: 14px; }
+    .tool-card-cta { margin-top: auto; padding-top: 12px; display: inline-flex; align-items: center; gap: 8px; color: var(--primary); font-size: 14px; font-weight: 750; }
+    .tool-card-cta svg { width: 16px; height: 16px; transition: transform .16s ease; }
+    .tool-card:hover .tool-card-cta svg { transform: translateX(4px); }
+    @media (max-width: 640px) { .tool-cards { grid-template-columns: 1fr; margin-bottom: 28px; } }
+
     .footer { padding: 0 0 30px; color: var(--muted); text-align: center; font-size: 12px; }
 
     @media (max-width: 860px) {
@@ -260,6 +276,27 @@
         <div class="trust-item"><span class="trust-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12l4 4L19 6"/></svg></span>Tanpa simpan data pribadi</div>
         <div class="trust-item"><span class="trust-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19V9m6 10V5m6 14v-7m4 7H2"/></svg></span>Rekomendasi kuantitas optimal</div>
       </div>
+    </section>
+
+    <section class="tool-cards" aria-label="Pilih alat">
+      <a class="tool-card" href="#calculatorForm">
+        <div class="tool-card-top">
+          <span class="tool-card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 17l5-5 4 4 7-8"/><path d="M14 8h6v6"/></svg></span>
+          <p class="tool-card-kicker">Alat 1</p>
+        </div>
+        <h2>Kalkulator Cuan</h2>
+        <p>Hitung modal setelah voucher, laba per pcs, dan jumlah belanja paling optimal sebelum checkout.</p>
+        <span class="tool-card-cta">Hitung sekarang <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14m-6-6 6 6-6 6"/></svg></span>
+      </a>
+      <a class="tool-card voucher" href="#voucherTool">
+        <div class="tool-card-top">
+          <span class="tool-card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 7a2 2 0 0 0 2-2h12a2 2 0 0 0 2 2v3a2 2 0 0 0 0 4v3a2 2 0 0 0-2 2H6a2 2 0 0 0-2-2v-3a2 2 0 0 0 0-4V7z"/><path d="M13 5v14"/></svg></span>
+          <p class="tool-card-kicker">Alat 2</p>
+        </div>
+        <h2>Kalkulator Voucher</h2>
+        <p>Cek potongan voucher diskon/cashback dan cari tahu belanja berapa biar potongan maksimal.</p>
+        <span class="tool-card-cta">Cek voucher <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14m-6-6 6 6-6 6"/></svg></span>
+      </a>
     </section>
 
     <section class="workspace" aria-label="Kalkulator bisnis">
