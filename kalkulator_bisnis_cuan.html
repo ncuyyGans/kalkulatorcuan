@@ -55,7 +55,7 @@
     .intro { padding: 34px 0 30px; display: grid; grid-template-columns: minmax(0, 700px) auto; gap: 40px; align-items: end; }
     .eyebrow { display: inline-flex; align-items: center; gap: 8px; color: var(--primary); font-size: 13px; font-weight: 750; letter-spacing: .08em; text-transform: uppercase; }
     .eyebrow::before { content: ""; width: 22px; height: 2px; border-radius: 999px; background: currentColor; }
-    h1 { margin: 12px 0 12px; max-width: 660px; font-size: clamp(34px, 5vw, 58px); line-height: 1.04; letter-spacing: -.055em; font-weight: 800; }
+    h1, .section-title { margin: 12px 0 12px; max-width: 660px; font-size: clamp(34px, 5vw, 58px); line-height: 1.04; letter-spacing: -.055em; font-weight: 800; }
     .intro-copy { margin: 0; max-width: 610px; color: var(--muted); font-size: 17px; }
     .trust { display: grid; gap: 10px; min-width: 210px; }
     .trust-item { display: flex; align-items: center; gap: 10px; color: var(--muted); font-size: 14px; }
@@ -160,6 +160,21 @@
     .toast { position: fixed; z-index: 99; top: 18px; left: 50%; transform: translateX(-50%); display: flex; align-items: center; gap: 9px; width: max-content; max-width: calc(100% - 32px); border: 1px solid #f2c7c2; border-radius: 10px; padding: 12px 15px; color: #8e3832; background: var(--red-soft); box-shadow: var(--shadow); font-size: 14px; font-weight: 650; animation: toastIn .2s ease-out; }
     @keyframes toastIn { from { opacity: 0; transform: translate(-50%, -8px); } to { opacity: 1; transform: translate(-50%, 0); } }
 
+    .topbar-row { display: flex; align-items: center; justify-content: space-between; gap: 16px; }
+    .nav { display: flex; gap: 2px; }
+    .nav a { color: var(--muted); text-decoration: none; font-size: 14px; font-weight: 650; padding: 8px 13px; border-radius: 9px; transition: background .15s ease, color .15s ease; }
+    .nav a:hover { background: var(--primary-soft); color: var(--primary); }
+
+    .sub-intro { padding-top: 8px; }
+
+    .segmented { position: relative; display: grid; grid-template-columns: 1fr 1fr; gap: 4px; padding: 4px; border: 1px solid var(--border); border-radius: 11px; background: var(--surface-soft); }
+    .segmented input { position: absolute; opacity: 0; pointer-events: none; }
+    .segmented label { margin: 0; padding: 9px 10px; border-radius: 8px; text-align: center; font-size: 14px; font-weight: 650; color: var(--muted); cursor: pointer; transition: background .15s ease, color .15s ease, box-shadow .15s ease; }
+    .segmented input:checked + label { background: var(--surface); color: var(--primary); box-shadow: 0 1px 4px rgba(20,38,29,.14); }
+    .segmented input:focus-visible + label { outline: 3px solid rgba(23,107,82,.26); outline-offset: 1px; }
+
+    .recommendation.warn { border-color: #eed3ac; color: #8a5518; background: var(--orange-soft); }
+
     .footer { padding: 0 0 30px; color: var(--muted); text-align: center; font-size: 12px; }
 
     @media (max-width: 860px) {
@@ -172,6 +187,7 @@
     @media (max-width: 580px) {
       .shell { width: min(100% - 32px, 1120px); }
       .topbar { padding-top: 17px; }
+      .nav a { padding: 8px 9px; font-size: 13px; }
       .intro { padding: 28px 0 24px; }
       h1 { font-size: 38px; }
       .intro-copy { font-size: 15px; }
@@ -212,18 +228,23 @@
       .legend-dot { background: #59605c; }
       .recommendation { border-color: rgba(94,159,232,.25); color: #b6d9f5; }
       .recommendation.good { border-color: rgba(114,188,143,.25); color: #b9e0c8; }
+      .recommendation.warn { border-color: rgba(222,146,85,.28); color: #f0c9a0; }
     }
   </style>
 </head>
 <body>
   <header class="topbar">
-    <div class="shell">
+    <div class="shell topbar-row">
       <div class="brand" aria-label="Kalkulator Cuan">
         <span class="brand-mark" aria-hidden="true">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 17l5-5 4 4 7-8"/><path d="M14 8h6v6"/></svg>
         </span>
         Kalkulator Cuan
       </div>
+      <nav class="nav" aria-label="Navigasi alat">
+        <a href="#calculatorForm">Hitung Cuan</a>
+        <a href="#voucherTool">Cek Voucher</a>
+      </nav>
     </div>
   </header>
 
@@ -337,6 +358,98 @@
         </div>
       </aside>
     </section>
+
+    <section class="intro sub-intro" id="voucherTool" aria-label="Kalkulator voucher">
+      <div>
+        <div class="eyebrow">Kalkulator voucher</div>
+        <h2 class="section-title">Belanja berapa<br>biar potongan maksimal?</h2>
+        <p class="intro-copy">Masukkan detail voucher—diskon persen, cashback, atau potongan nominal—lalu total belanjamu. Kami hitung potongan yang didapat dan titik belanja paling pas.</p>
+      </div>
+    </section>
+
+    <section class="workspace" aria-label="Kalkulator voucher">
+      <form id="voucherForm" class="card" novalidate>
+        <div class="card-head">
+          <p class="card-kicker">Input voucher</p>
+          <h2 class="card-title">Masukkan detail voucher</h2>
+          <p class="card-subtitle">Salin angka dari syarat &amp; ketentuan voucher kamu.</p>
+        </div>
+        <div class="card-body form-stack">
+          <div class="field">
+            <label>Tipe voucher</label>
+            <div class="segmented" role="radiogroup" aria-label="Tipe voucher">
+              <input type="radio" id="vTypePercent" name="vType" value="percent" checked>
+              <label for="vTypePercent">Diskon / Cashback %</label>
+              <input type="radio" id="vTypeFlat" name="vType" value="flat">
+              <label for="vTypeFlat">Potongan nominal Rp</label>
+            </div>
+          </div>
+
+          <div id="vPercentFields" class="field-grid">
+            <div class="field">
+              <label for="vPercent">Besar diskon / cashback</label>
+              <div class="input-wrap"><input class="has-suffix" id="vPercent" type="number" min="1" max="100" step="any" placeholder="40" inputmode="decimal"><span class="input-suffix">%</span></div>
+            </div>
+            <div class="field">
+              <label for="vCap">Maksimal potongan <span class="optional">(s.d.)</span></label>
+              <div class="input-wrap"><span class="input-prefix">Rp</span><input class="has-prefix" id="vCap" type="number" min="0" step="any" placeholder="25.000" inputmode="decimal"></div>
+            </div>
+          </div>
+
+          <div id="vFlatField" class="field hidden">
+            <label for="vFlat">Potongan nominal</label>
+            <div class="input-wrap"><span class="input-prefix">Rp</span><input class="has-prefix" id="vFlat" type="number" min="1" step="any" placeholder="15.000" inputmode="decimal"></div>
+          </div>
+
+          <div class="field-grid">
+            <div class="field">
+              <label for="vMin">Minimal belanja <span class="optional">(opsional)</span></label>
+              <div class="input-wrap"><span class="input-prefix">Rp</span><input class="has-prefix" id="vMin" type="number" min="0" step="any" placeholder="50.000" inputmode="decimal"></div>
+            </div>
+            <div class="field">
+              <label for="vSpend">Total belanja kamu</label>
+              <div class="input-wrap"><span class="input-prefix">Rp</span><input class="has-prefix" id="vSpend" type="number" min="1" step="any" placeholder="120.000" inputmode="decimal"></div>
+            </div>
+          </div>
+
+          <button class="submit" type="submit">Hitung potongan voucher <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14m-6-6 6 6-6 6"/></svg></button>
+        </div>
+      </form>
+
+      <aside id="vResultCard" class="card result-card" aria-live="polite">
+        <div id="vResultHeader" class="result-top hidden">
+          <div class="result-topline">
+            <div><p class="result-label">Estimasi voucher</p><h2 id="vResultTitle" class="result-name">Voucher</h2></div>
+            <div class="status"><span id="vStatusDot" class="status-dot"></span><span id="vStatusText">Menunggu</span></div>
+          </div>
+          <div class="profit-hero">
+            <div class="profit-caption">Potongan yang didapat</div>
+            <div id="vResDiscount" class="profit-value">Rp0</div>
+            <div id="vResDiscountDetail" class="profit-detail">—</div>
+          </div>
+        </div>
+
+        <div id="vEmptyState" class="empty-state">
+          <div class="empty-visual" aria-hidden="true"><div class="empty-sheet"><div class="empty-line"></div><div class="empty-line"></div><div class="empty-line"></div></div><div class="empty-coin">Rp</div></div>
+          <h2 class="empty-title">Cek voucher kamu di sini</h2>
+          <p class="empty-copy">Isi detail voucher dan total belanjamu, lalu tekan hitung untuk tahu potongan yang didapat dan target belanja paling pas.</p>
+        </div>
+
+        <div id="vResultBody" class="result-body hidden">
+          <div class="metrics">
+            <div class="metric"><div class="metric-label">Total belanja</div><div id="vResSpend" class="metric-value">Rp0</div><div class="metric-foot">Sesuai input</div></div>
+            <div class="metric"><div class="metric-label">Total bayar</div><div id="vResNet" class="metric-value">Rp0</div><div class="metric-foot">Setelah potongan</div></div>
+            <div class="metric"><div class="metric-label">Persen efektif</div><div id="vResEffective" class="metric-value">0%</div><div class="metric-foot">Dari total belanja</div></div>
+            <div class="metric discount"><div class="metric-label">Target belanja optimal</div><div id="vResOptimal" class="metric-value">—</div><div id="vOptimalFoot" class="metric-foot">Untuk potongan maksimal</div></div>
+          </div>
+
+          <div id="vRecommendation" class="recommendation hidden">
+            <span class="recommendation-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18h6m-5 3h4"/><path d="M8.4 14.5A7 7 0 1 1 15.6 14.5c-.9.7-1.4 1.4-1.6 2.5h-4c-.2-1.1-.7-1.8-1.6-2.5z"/></svg></span>
+            <p id="vRecommendationText"></p>
+          </div>
+        </div>
+      </aside>
+    </section>
   </main>
 
   <footer class="footer shell">Perhitungan bersifat estimasi dan belum memasukkan biaya operasional lainnya.</footer>
@@ -429,6 +542,100 @@
     }
 
     $('calculatorForm').addEventListener('submit', (event) => { event.preventDefault(); calculate(); });
+
+    const voucherType = () => document.querySelector('input[name="vType"]:checked').value;
+
+    function toggleVoucherFields() {
+      const isPercent = voucherType() === 'percent';
+      $('vPercentFields').classList.toggle('hidden', !isPercent);
+      $('vFlatField').classList.toggle('hidden', isPercent);
+    }
+
+    function calculateVoucher() {
+      const isPercent = voucherType() === 'percent';
+      const pct = numberValue('vPercent');
+      const cap = numberValue('vCap');
+      const flat = numberValue('vFlat');
+      const min = numberValue('vMin');
+      const spend = numberValue('vSpend');
+
+      if (isPercent && (pct <= 0 || pct > 100)) return showMessage('Masukkan besar diskon voucher antara 1% dan 100%.');
+      if (!isPercent && flat <= 0) return showMessage('Masukkan potongan nominal voucher.');
+      if (spend <= 0) return showMessage('Masukkan total belanja kamu.');
+
+      const eligible = spend >= min;
+      let discount = 0;
+      if (eligible) {
+        discount = isPercent ? spend * (pct / 100) : flat;
+        if (isPercent && cap > 0) discount = Math.min(discount, cap);
+        discount = Math.min(discount, spend);
+      }
+      const net = spend - discount;
+      const effective = spend > 0 ? (discount / spend) * 100 : 0;
+
+      $('vResultTitle').textContent = isPercent
+        ? `Diskon ${percent(pct)}%${cap > 0 ? ` · s.d. ${rupiah(cap)}` : ''}`
+        : `Potongan ${rupiah(flat)}`;
+      $('vStatusText').textContent = eligible ? 'Voucher terpakai' : 'Belum memenuhi syarat';
+      $('vStatusDot').style.background = eligible ? '#9dd4bd' : '#e8ad70';
+      $('vResDiscount').textContent = rupiah(discount);
+      $('vResDiscountDetail').textContent = eligible
+        ? (isPercent ? `${percent(pct)}% dari belanja` : 'Potongan nominal terpakai')
+        : `Butuh belanja minimal ${rupiah(min)} agar voucher berlaku`;
+      $('vResSpend').textContent = rupiah(spend);
+      $('vResNet').textContent = rupiah(net);
+      $('vResEffective').textContent = `${percent(effective)}%`;
+
+      const rec = $('vRecommendation');
+      rec.className = 'recommendation hidden';
+      let optimalText = '—';
+      let optimalFoot = 'Untuk potongan maksimal';
+      if (isPercent) {
+        if (cap > 0) {
+          const optimal = Math.ceil(cap / (pct / 100));
+          optimalText = rupiah(optimal);
+          if (eligible && spend < optimal) {
+            rec.classList.add('warn');
+            $('vRecommendationText').innerHTML = `Target belanja untuk potongan maksimal adalah <strong>${rupiah(optimal)}</strong>. Tambah <strong>${rupiah(optimal - spend)}</strong> lagi untuk dapat potongan penuh ${rupiah(cap)}.`;
+            rec.classList.remove('hidden');
+          } else if (eligible) {
+            rec.classList.add('good');
+            $('vRecommendationText').innerHTML = `Titik maksimal tercapai — potongan mentok di <strong>${rupiah(cap)}</strong>. Tambah belanja lagi tidak menambah potongan.`;
+            rec.classList.remove('hidden');
+          }
+        } else {
+          optimalText = 'Tanpa batas';
+          optimalFoot = 'Makin besar belanja, makin besar potongan';
+          if (eligible) {
+            $('vRecommendationText').innerHTML = `Voucher ini tanpa batas maksimal — potongan kamu sekarang <strong>${rupiah(discount)}</strong> dan terus naik kalau belanja ditambah.`;
+            rec.classList.remove('hidden');
+          }
+        }
+      } else if (eligible) {
+        rec.classList.add('good');
+        $('vRecommendationText').innerHTML = min > 0
+          ? `Potongan flat <strong>${rupiah(flat)}</strong> — selama belanja ≥ ${rupiah(min)}, potongan tetap segini.`
+          : `Potongan flat <strong>${rupiah(flat)}</strong> tanpa syarat minimal.`;
+        rec.classList.remove('hidden');
+      }
+      if (!eligible) {
+        rec.classList.add('warn');
+        $('vRecommendationText').innerHTML = `Belanja kamu <strong>${rupiah(spend)}</strong> belum cukup. Tambah <strong>${rupiah(min - spend)}</strong> lagi agar voucher berlaku.`;
+        rec.classList.remove('hidden');
+      }
+      $('vResOptimal').textContent = optimalText;
+      $('vOptimalFoot').textContent = optimalFoot;
+
+      $('vEmptyState').classList.add('hidden');
+      $('vResultHeader').classList.remove('hidden');
+      $('vResultBody').classList.remove('hidden');
+
+      if (window.innerWidth < 861) $('vResultCard').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+
+    document.querySelectorAll('input[name="vType"]').forEach((radio) => radio.addEventListener('change', toggleVoucherFields));
+    $('voucherForm').addEventListener('submit', (event) => { event.preventDefault(); calculateVoucher(); });
+    toggleVoucherFields();
   </script>
 </body>
 </html>
